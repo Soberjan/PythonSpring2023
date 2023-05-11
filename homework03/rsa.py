@@ -3,56 +3,48 @@ import typing as tp
 
 
 def is_prime(n: int) -> bool:
-    """
-    Tests to see if a number is prime.
-
-    >>> is_prime(2)
-    True
-    >>> is_prime(11)
-    True
-    >>> is_prime(8)
-    False
-    """
-    # PUT YOUR CODE HERE
-    pass
-
+    if n == 1:
+        return False
+    isPrime = True
+    for i in range(2, int(n**(0.5)+1)):
+        if n % i == 0:
+            isPrime = False
+            break
+    return isPrime
+print(is_prime(1))
 
 def gcd(a: int, b: int) -> int:
-    """
-    Euclid's algorithm for determining the greatest common divisor.
-
-    >>> gcd(12, 15)
-    3
-    >>> gcd(3, 7)
-    1
-    """
-    # PUT YOUR CODE HERE
-    pass
-
+    if a == 0 or b == 0:
+        return max(a, b)
+    mx = max(a, b)
+    mn = min(a, b)
+    while mx % mn != 0:
+        mx = mx % mn
+        if mx < mn:
+            mx, mn = mn, mx
+    return mn
 
 def multiplicative_inverse(e: int, phi: int) -> int:
-    """
-    Euclid's extended algorithm for finding the multiplicative
-    inverse of two numbers.
-
-    >>> multiplicative_inverse(7, 40)
-    23
-    """
-    # PUT YOUR CODE HERE
-    pass
-
-
+    table = [[phi, e, phi % e, phi // e, 0, 1]]
+    i = 0
+    while table[i][2] != 0:
+        table.append([table[i][1], table[i][2], table[i][1] % table[i][2], table[i][1] // table[i][2], 0, 0])
+        i+=1
+    n = len(table)
+    table[n-1][4], table[n-1][5] = 0, 1
+    for i in range(n-2, -1, -1):
+        table[i][4], table[i][5] = table[i+1][5], table[i+1][4] - table[i+1][5] * (table[i][0] // table[i][1])
+    #print(table)
+    return table[0][5] % phi
+print(multiplicative_inverse(7, 40))
 def generate_keypair(p: int, q: int) -> tp.Tuple[tp.Tuple[int, int], tp.Tuple[int, int]]:
     if not (is_prime(p) and is_prime(q)):
         raise ValueError("Both numbers must be prime.")
     elif p == q:
         raise ValueError("p and q cannot be equal")
 
-    # n = pq
-    # PUT YOUR CODE HERE
-
-    # phi = (p-1)(q-1)
-    # PUT YOUR CODE HERE
+    n = p*q
+    phi = (p-1)*(q-1)
 
     # Choose an integer e such that e and phi(n) are coprime
     e = random.randrange(1, phi)
@@ -69,7 +61,7 @@ def generate_keypair(p: int, q: int) -> tp.Tuple[tp.Tuple[int, int], tp.Tuple[in
     # Return public and private keypair
     # Public key is (e, n) and private key is (d, n)
     return ((e, n), (d, n))
-
+#print(generate_keypair(17, 11))
 
 def encrypt(pk: tp.Tuple[int, int], plaintext: str) -> tp.List[int]:
     # Unpack the key into it's components
